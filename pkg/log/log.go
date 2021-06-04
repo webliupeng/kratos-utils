@@ -10,12 +10,12 @@ type LogursLogger struct {
 }
 
 func NewLogger() *LogursLogger {
-
 	lg := logrus.New()
 	lg.SetFormatter(&logrus.JSONFormatter{})
 
 	return &LogursLogger{lg}
 }
+
 func (l *LogursLogger) Log(level log.Level, keyvals ...interface{}) error {
 	if len(keyvals) == 0 {
 		return nil
@@ -26,14 +26,10 @@ func (l *LogursLogger) Log(level log.Level, keyvals ...interface{}) error {
 
 	logursLevel, _ := logrus.ParseLevel(level.String())
 
-	var logEntry *logrus.Entry
+	logEntry := logrus.NewEntry(l.logger)
 
 	for i := 0; i < len(keyvals); i += 2 {
-		if logEntry == nil {
-			logEntry = l.logger.WithField(keyvals[i].(string), keyvals[i+1])
-		} else {
-			logEntry = logEntry.WithField(keyvals[i].(string), keyvals[i+1])
-		}
+		logEntry = logEntry.WithField(keyvals[i].(string), keyvals[i+1])
 	}
 
 	logEntry.Logf(logursLevel, "")
