@@ -25,11 +25,14 @@ func (l *LogursLogger) Log(level log.Level, keyvals ...interface{}) error {
 	}
 
 	logursLevel, _ := logrus.ParseLevel(level.String())
-
 	logEntry := logrus.NewEntry(l.logger)
 
 	for i := 0; i < len(keyvals); i += 2 {
-		logEntry = logEntry.WithField(keyvals[i].(string), keyvals[i+1])
+		key := keyvals[i].(string)
+		if key == "ts" {
+			continue
+		}
+		logEntry = logEntry.WithField(key, keyvals[i+1])
 	}
 
 	logEntry.Logf(logursLevel, "")
